@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COD E-Book - Computer Organization & Design</title>
+    <style>
+        :root {
+            --bg-color: #090d16;
+            --book-bg: #ffffff;
+            --text-color: #1e293b;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --border-color: #cbd5e1;
+            --header-bg: #0f172a;
+            --card-bg: #f8fafc;
+            --shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.6);
+            --svg-stroke: #0f172a;
+            --svg-fill: #eff6ff;
+            --svg-accent: #2563eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1080px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Navigation Bar */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            background-color: #1e293b;
+            padding: 14px 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+            color: white;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background-color: #475569;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.5;
+        }
+
+        .page-info {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        /* Book Frame */
+        .book {
+            width: 100%;
+            min-height: 860px;
+            background-color: var(--book-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        .page {
+            display: none;
+            padding: 45px 55px;
+            width: 100%;
+            height: 100%;
+            animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            overflow-y: auto;
+            max-height: 880px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.99) translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2.1rem;
+            color: #0f172a;
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.45rem;
+            color: #1e293b;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 6px;
+            margin-top: 28px;
+            margin-bottom: 12px;
+        }
+
+        h3 {
+            font-size: 1.15rem;
+            margin-top: 18px;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+
+        p,
+        li {
+            font-size: 0.96rem;
+            line-height: 1.65;
+            color: #334155;
+            margin-bottom: 12px;
+        }
+
+        ul,
+        ol {
+            margin-left: 22px;
+            margin-bottom: 16px;
+        }
+
+        /* Cover Page */
+        .title-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            min-height: 760px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 8px;
+            margin: -45px -55px;
+        }
+
+        .title-page h1 {
+            font-size: 4.2rem;
+            color: #ffffff;
+            border: none;
+            letter-spacing: 4px;
+            margin-top: 40px;
+        }
+
+        .title-page .subtitle {
+            font-size: 1.4rem;
+            color: #38bdf8;
+            margin-bottom: 20px;
+            font-weight: 300;
+        }
+
+        .title-page .author-box {
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 28px 45px;
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+        }
+
+        .title-page .author-box p {
+            color: #cbd5e1;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+
+        .title-page .author-box strong {
+            color: #f8fafc;
+            font-size: 1.25rem;
+        }
+
+        /* Tables & SVG Schematic Boxes */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 24px 0;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+        }
+
+        th,
+        td {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        .diagram-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 24px;
+            margin: 22px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .diagram-container svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .diagram-caption {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #334155;
+            margin-top: 14px;
+            text-align: center;
+        }
+
+        /* TOC Styling */
+        .toc-list {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .toc-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px dashed var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 6px;
+        }
+
+        .toc-item:hover {
+            background-color: #eff6ff;
+            color: var(--accent-color);
+            padding-left: 20px;
+        }
+
+        .toc-title {
+            font-weight: 600;
+        }
+
+        .toc-page {
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        /* Quiz Styling */
+        .quiz-card {
+            background-color: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 18px 22px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+        }
+
+        .quiz-question {
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #0f172a;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .quiz-option:hover {
+            background-color: #f1f5f9;
+        }
+
+        .feedback {
+            margin-top: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .feedback.correct {
+            color: #16a34a;
+            display: block;
+        }
+
+        .feedback.incorrect {
+            color: #dc2626;
+            display: block;
+        }
+
+        .footer-tag {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.88rem;
+        }
+
+        @media (max-width: 768px) {
+            .page {
+                padding: 25px 20px;
+            }
+
+            .title-page {
+                padding: 40px 20px;
+                margin: -25px -20px;
+            }
+
+            .title-page h1 {
+                font-size: 2.8rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Navigation Bar -->
+        <div class="controls">
+            <button class="btn" id="prevBtn" onclick="changePage(-1)">&#8592; Previous Page</button>
+            <div class="page-info">
+                <span id="pageIndicator">Page 1 of 11</span>
+            </div>
+            <button class="btn" id="nextBtn" onclick="changePage(1)">Next Page &#8594;</button>
+        </div>
+
+        <!-- Book Frame -->
+        <div class="book">
+
+            <!-- PAGE 1: TITLE PAGE -->
+            <div class="page active" id="page-1">
+                <div class="title-page">
+                    <div>
+                        <h1>COD</h1>
+                        <p class="subtitle">Computer Organization & Design Interactive Technical Manual</p>
+                    </div>
+                    <div class="author-box">
+                        <p>Designed & Authored by:</p>
+                        <p><strong>Sujal Nasa</strong></p>
+                        <p>Roll No: <strong>26225030</strong></p>
+                        <p>Program: <strong>1MCA</strong></p>
+                    </div>
+                    <p style="color: #94a3b8; font-size: 0.85rem;">High-Precision Vector Schematics & Fully Displayed
+                        Data Architecture Edition</p>
+                </div>
+            </div>
+
+            <!-- PAGE 2: PREFACE & ACKNOWLEDGEMENT -->
+            <div class="page" id="page-2">
+                <h1>Preface & Acknowledgement</h1>
+
+                <h2>Preface</h2>
+                <p>Welcome to <strong>Computer Organization & Design (COD)</strong>, an interactive digital reference
+                    manual created to clarify core architectural principles, logic gate structures, execution units, and
+                    control unit designs powering modern computer systems. From basic combinational logic gates to
+                    instruction execution cycles, hardwired/microprogrammed control units, pipelining hazards, and
+                    multi-tier memory hierarchies, this text combines detailed explanations with complete truth tables
+                    and fully labeled high-definition vector schematics.</p>
+
+                <h2>Acknowledgement</h2>
+                <p>I extend my deepest gratitude to my professors, academic mentors, and colleagues in the Department of
+                    Computer Applications for their invaluable support, critical guidance, and insights during the
+                    development of this reference manual. Special appreciation goes to the IEEE computer architecture
+                    standards groups, whose standard logic gate conventions inspired the vector schematics across all
+                    modules.</p>
+
+                <div
+                    style="margin-top: 40px; padding: 22px; background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px;">
+                    <p><strong>Author:</strong> Sujal Nasa</p>
+                    <p><strong>Roll Number:</strong> 26225030</p>
+                    <p><strong>Program / Class:</strong> 1MCA</p>
+                </div>
+
+                <div class="footer-tag">Sujal Nasa | 26225030 | 1MCA</div>
+            </div>
+
+            <!-- PAGE 3: TABLE OF CONTENTS -->
+            <div class="page" id="page-3">
+                <h1>Table of Contents</h1>
+                <p>Select any module below to navigate directly to its content page:</p>
+
+                <ul class="toc-list">
+                    <li class="toc-item" onclick="goToPage(4)">
+                        <span class="toc-title">Module 1: Combinational Circuits - Half/Full Adders & Subtractors</span>
+                        <span class="toc-page">Page 4</span>
+                    </li>
+                    <li class="toc-item" onclick="goToPage(5)">
+                        <span class="toc-title">Module 2: Data Routing - Multiplexer, Demultiplexer, Decoder &
+                            Encoder</span>
+                        <span class="toc-page">Page 5</span>
+                    </li>
+                    <li class="toc-item" onclick="goToPage(6)">
+                        <span class="toc-title">Module 3: Sequential Logic Circuits - Latches, Flip-Flops & Shift
+                            Registers</span>
+                        <span class="toc-page">Page 6</span>
+                    </li>
+                    <li class="toc-item" onclick="goToPage(7)">
+                        <span class="toc-title">Module 4: Register Transfer & Micro-Operations (RTL, Bus & ALU
+                            Design)</span>
+                        <span class="toc-page">Page 7</span>
+                    </li>
+                    <li class="toc-item" onclick="goToPage(8)">
+                        <span class="toc-title">Module 5: Control Units & Execution (Hardwired & Microprogrammed
+                            CU)</span>
+                        <span class="toc-page">Page 8</span>
+                    </li>
+                    <li class="toc-item" onclick="goToPage(9)">
+                        <span class="toc-title">Module 6: Pipelining, Hazards & Superscalar Execution</span>
+                        <span class="toc-page">Page 9</span>
+                    </li>
+                    <li class="toc-item" onclick="goToPage(10)">
+                        <span class="toc-title">Module 7: Memory Hierarchy, Cache, Virtual Memory & Secondary
+                            Storage</span>
+                        <span class="toc-page">Page 10</span>
+                    </li>
+                    <li class="toc-item" onclick="goToPage(11)">
+                        <span class="toc-title">Interactive Assessment: 10 MCQ Practice Quiz</span>
+                        <span class="toc-page">Page 11</span>
+                    </li>
+                </ul>
+
+                <div class="footer-tag">Sujal Nasa | 26225030 | 1MCA</div>
+            </div>
+
+            <!-- PAGE 4: COMBINATIONAL CIRCUITS - ADDERS & SUBTRACTORS -->
+            <div class="page" id="page-4">
+                <h1>Unit 1: Combinational Circuits (Adders & Subtractors)</h1>
+                <p>Combinational logic circuits compute outputs purely as a function of their instantaneous input
+                    values, without internal feedback or memory loops.</p>
+
+                <h2>1. Half Adder</h2>
+                <p>Adds two single binary digits ($A$ and $B$), outputting Sum ($S$) and Carry ($C$). The schematic
+                    below shows explicit binary data values ($A=1, B=1$) propagating through the XOR and AND logic gates
+                    to yield $S=0$ and $C=1$.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Input A</th>
+                            <th>Input B</th>
+                            <th>Sum (S = A ⊕ B)</th>
+                            <th>Carry (C = A · B)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="diagram-container">
+                    <svg width="520" height="180" viewBox="0 0 520 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Inputs -->
+                        <text x="15" y="45" font-weight="bold" font-size="16" fill="#0f172a">A = 1</text>
+                        <text x="15" y="105" font-weight="bold" font-size="16" fill="#0f172a">B = 1</text>
+
+                        <!-- Lines -->
+                        <path d="M 65 40 L 160 40" stroke="#0f172a" stroke-width="2.5" />
+                        <path d="M 65 100 L 160 100" stroke="#0f172a" stroke-width="2.5" />
+
+                        <path d="M 90 40 L 90 135 L 170 135" stroke="#0f172a" stroke-width="2.5" />
+                        <path d="M 120 100 L 120 155 L 170 155" stroke="#0f172a" stroke-width="2.5" />
+
+                        <circle cx="90" cy="40" r="4" fill="#2563eb" />
+                        <circle cx="120" cy="100" r="4" fill="#2563eb" />
+
+                        <!-- XOR Gate -->
+                        <path d="M 152 20 Q 168 70 152 120" stroke="#0f172a" stroke-width="2.5" fill="none" />
+                        <path d="M 160 20 Q 176 70 160 120 Q 200 120 240 70 Q 200 20 160 20 Z" stroke="#0f172a"
+                            stroke-width="2.5" fill="#eff6ff" />
+                        <text x="175" y="75" font-weight="bold" font-size="13" fill="#2563eb">XOR</text>
+                        <path d="M 240 70 L 350 70" stroke="#0f172a" stroke-width="2.5" />
+
+                        <!-- AND Gate -->
+                        <path d="M 170 120 L 200 120 A 25 25 0 0 1 200 170 L 170 170 Z" stroke="#0f172a"
+                            stroke-width="2.5" fill="#eff6ff" />
+                        <text x="178" y="150" font-weight="bold" font-size="13" fill="#2563eb">AND</text>
+                        <path d="M 225 145 L 350 145" stroke="#0f172a" stroke-width="2.5" />
+
+                        <!-- Data Callouts -->
+                        <rect x="355" y="50" width="150" height="36" rx="6" fill="#1e293b" />
+                        <text x="365" y="73" font-weight="bold" font-size="14" fill="#38bdf8">Sum (S) = 0</text>
+
+                        <rect x="355" y="125" width="150" height="36" rx="6" fill="#1e293b" />
+                        <text x="365" y="148" font-weight="bold" font-size="14" fill="#38bdf8">Carry (C) = 1</text>
+                    </svg>
+                    <div class="diagram-caption">Figure 1.1: Half Adder Schematic Circuit with Active Signal Vectors
+                        (A=1, B=1)</div>
+                </div>
+
+                <h2>2. Full Adder</h2>
+                <p>Computes arithmetic sum of three 1-bit inputs: $A$, $B$, and input carry $C_{in}$.</p>
+                <p><strong>Equations:</strong> $S = A \oplus B \oplus C_{in}$, $C_{out} = AB + BC_{in} + AC_{in}$</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>A</th>
+                            <th>B</th>
+                            <th>Cin</th>
+                            <th>Sum (S)</th>
+                            <th>Cout</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>3. Half Subtractor</h2>
+                <p>Subtracts subtrahend bit $B$ from minuend bit $A$, producing Difference ($D$) and Borrow ($B_{or}$).
+                </p>
+                <p><strong>Equations:</strong> $D = A \oplus B$, $B_{or} = \overline{A} \cdot B$</p>
+
+                <h2>4. Full Subtractor</h2>
+                <p>Subtracts inputs $B$ and $B_{in}$ from $A$, yielding Difference ($D$) and Borrow Out ($B_{out}$).</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>A</th>
+                            <th>B</th>
+                            <th>Bin</th>
+                            <th>Difference (D)</th>
+                            <th>Bout</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="footer-tag">Sujal Nasa | 26225030 | 1MCA</div>
+            </div>
+
+            <!-- PAGE 5: MULTIPLEXERS, DEMUX, DECODER, ENCODER -->
+            <div class="page" id="page-5">
+                <h1>Unit 1: Combinational Circuits (Part II)</h1>
+
+                <h2>1. 4-to-1 Multiplexer (MUX)</h2>
+                <p>Selects one of four binary data input channels ($I_0, I_1, I_2, I_3$) and directs it to a single
+                    output line based on two select lines ($S_1, S_0$). Below, select signals $S_1=1, S_0=0$ route input
+                    channel $I_2$ directly to the output.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S1</th>
+                            <th>S0</th>
+                            <th>Output (Y)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>I0</td>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>I1</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>I2</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>I3</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="diagram-container">
+                    <svg width="480" height="220" viewBox="0 0 480 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- MUX Block -->
+                        <polygon points="140,20 280,40 280,180 140,200" fill="#eff6ff" stroke="#0f172a"
+                            stroke-width="2.5" />
+                        <text x="175" y="115" font-weight="bold" font-size="18" fill="#2563eb">4:1 MUX</text>
+
+                        <!-- Data Lines -->
+                        <line x1="40" y1="50" x2="142" y2="50" stroke="#94a3b8" stroke-width="2" />
+                        <text x="15" y="55" font-weight="bold" fill="#64748b">I0 = 0</text>
+
+                        <line x1="40" y1="85" x2="141" y2="85" stroke="#94a3b8" stroke-width="2" />
+                        <text x="15" y="90" font-weight="bold" fill="#64748b">I1 = 0</text>
+
+                        <!-- Active Line Highlighted -->
+                        <line x1="40" y1="120" x2="141" y2="120" stroke="#16a34a" stroke-width="3.5" />
+                        <text x="15" y="125" font-weight="bold" fill="#16a34a">I2 = 1 ★</text>
+
+                        <line x1="40" y1="155" x2="142" y2="155" stroke="#94a3b8" stroke-width="2" />
+                        <text x="15" y="160" font-weight="bold" fill="#64748b">I3 = 0</text>
+
+                        <!-- Select Lines -->
+                        <line x1="180" y1="194" x2="180" y2="215" stroke="#2563eb" stroke-width="2.5" />
+                        <text x="165" y="218" font-weight="bold" font-size="12" fill="#2563eb">S1 = 1</text>
+
+                        <line x1="240" y1="186" x2="240" y2="215" stroke="#2563eb" stroke-width="2.5" />
+                        <text x="225" y="218" font-weight="bold" font-size="12" fill="#2563eb">S0 = 0</text>
+
+                        <!-- Output -->
+                        <line x1="280" y1="110" x2="350" y2="110" stroke="#16a34a" stroke-width="3.5" />
+
+                        <rect x="350" y="90" width="115" height="40" rx="6" fill="#1e293b" />
+                        <text x="360" y="115" font-weight="bold" font-size="14" fill="#4ade80">Y = I2 = 1</text>
+                    </svg>
+                    <div class="diagram-caption">Figure 2.1: 4-to-1 Multiplexer Data Routing with Active Path Display
+                        (Select Code 10)</div>
+                </div>
+
+                <h2>2. 1-to-4 Demultiplexer (DEMUX)</h2>
+                <p>Routes a single data input $D$ to one of four output channels ($Y_0-Y_3$) specified by select inputs
+                    $S_1, S_0$.</p>
+
+                <h2>3. 3-to-8 Decoder</h2>
+                <p>Decodes a 3-bit binary code into one of 8 unique active outputs ($Y_0$ through $Y_7$).</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>A2</th>
+                            <th>A1</th>
+                            <th>A0</th>
+                            <th>Active Output Line</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>Y0 = 1</td>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>Y1 = 1</td>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>Y2 = 1</td>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>Y3 = 1</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>Y4 = 1</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>Y5 = 1</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>0</td>
+                            <td>Y6 = 1</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>Y7 = 1</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>4. 8-to-3 Encoder</h2>
+                <p>Converts 8 active input lines back into a 3-bit binary code representation.</p>
+
+                <div class="footer-tag">Sujal Nasa | 26225030 | 1MCA</div>
+            </div>
+
+            <!-- PAGE 6: SEQUENTIAL CIRCUITS -->
+            <div class="page" id="page-6">
+                <h1>Unit 2: Sequential Logic Circuits</h1>
+                <p>Sequential circuits incorporate memory elements (flip-flops/latches), allowing their state to depend
+                    on both current inputs and previous internal states.</p>
+
+                <h2>1. SR Latch & D Latch</h2>
+                <p>An <strong>SR Latch</strong> uses cross-coupled NOR/NAND gates. The state $S=1, R=1$ creates an
+                    undefined invalid condition. A <strong>D Latch</strong> resolves this state by passing input $D$
+                    through an inverted path.</p>
+
+                <h2>2. SR Flip-Flop & D Flip-Flop</h2>
+                <p>Edge-triggered registers update output state ($Q$) on clock transitions (rising or falling edges).
+                    The schematic below details all pin connections including asynchronous Preset ($PRE$) and Clear
+                    ($CLR$) control data lines.</p>
+
+                <h3>D Flip-Flop Truth Table:</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Clock (CLK)</th>
+                            <th>D Input</th>
+                            <th>Q(t+1) Output</th>
+                            <th>Operation Mode</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>↑ (Rising Edge)</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>Reset State</td>
+                        </tr>
+                        <tr>
+                            <td>↑ (Rising Edge)</td>
+                            <td>1</td>
+                            <td>1</td>
+                            <td>Set State</td>
+                        </tr>
+                        <tr>
+                            <td>0 / 1 / ↓</td>
+                            <td>X</td>
+                            <td>Q(t)</td>
+                            <td>No Change (Hold State)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="diagram-container">
+                    <svg width="440" height="190" viewBox="0 0 440 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Main Block -->
+                        <rect x="130" y="30" width="160" height="130" rx="8" fill="#eff6ff" stroke="#0f172a"
+                            stroke-width="2.5" />
+                        <text x="175" y="100" font-weight="bold" font-size="16" fill="#1e40af">D Flip-Flop</text>
+
+                        <!-- Control Pins -->
+                        <line x1="210" y1="0" x2="210" y2="30" stroke="#dc2626" stroke-width="2" />
+                        <text x="185" y="15" font-weight="bold" font-size="11" fill="#dc2626">PRESET (1)</text>
+
+                        <line x1="210" y1="160" x2="210" y2="190" stroke="#dc2626" stroke-width="2" />
+                        <text x="188" y="180" font-weight="bold" font-size="11" fill="#dc2626">CLEAR (1)</text>
+
+                        <!-- Data Inputs -->
+                        <line x1="40" y1="60" x2="130" y2="60" stroke="#2563eb" stroke-width="2.5" />
+                        <text x="15" y="65" font-weight="bold" font-size="14" fill="#2563eb">D = 1</text>
+
+                        <!-- Clock Line -->
+                        <line x1="40" y1="130" x2="130" y2="130" stroke="#0f172a" stroke-width="2.5" />
+                        <polyline points="130,120 145,130 130,140" fill="none" stroke="#0f172a" stroke-width="2" />
+                        <text x="5" y="135" font-weight="bold" font-size="13" fill="#0f172a">CLK (↑)</text>
+
+                        <!-- Data Outputs -->
+                        <line x1="290" y1="60" x2="350" y2="60" stroke="#16a34a" stroke-width="2.5" />
+                        <rect x="350" y="42" width="80" height="32" rx="4" fill="#1e293b" />
+                        <text x="360" y="63" font-weight="bold" font-size="13" fill="#4ade80">Q = 1</text>
+
+                        <line x1="290" y1="130" x2="350" y2="130" stroke="#64748b" stroke-width="2.5" />
+                        <rect x="350" y="112" width="80" height="32" rx="4" fill="#1e293b" />
+                        <text x="360" y="133" font-weight="bold" font-size="13" fill="#94a3b8">Q' = 0</text>
+                    </svg>
+                    <div class="diagram-caption">Figure 3.1: D-Flip-Flop Pin Schematic with Asynchronous Signals & High
+                        State Data Output</div>
+                </div>
+
+                <h2>3. Shift Registers</h2>
+                <p>Cascaded flip-flops configured to shift data linearly across clock pulses:</p>
+                <ul>
+                    <li><strong>SISO (Serial-In Serial-Out):</strong> Delays data streams bit-by-bit.</li>
+                    <li><strong>SIPO (Serial-In Parallel-Out):</strong> Converts serial communication data to parallel
+                        bus words.</li>
+                    <li><strong>PISO (Parallel-In Serial-Out):</strong> Serializes parallel data registers.</li>
+                    <li><strong>PIPO (Parallel-In Parallel-Out):</strong> Serves as multi-bit storage registers.</li>
+                </ul>
+
+                <div class="footer-tag">Sujal Nasa | 26225030 | 1MCA</div>
+            </div>
+
+            <!-- PAGE 7: REGISTER TRANSFER & MICRO-OPERATIONS -->
+            <div class="page" id="page-7">
+                <h1>Unit 3: Register Transfer & Micro-Operations</h1>
+
+                <h2>1. Register Transfer Language (RTL)</h2>
+                <p>RTL provides standard notation to express hardware transfers between processor registers.</p>
+                <p><strong>Example:</strong> $P: R2 \leftarrow R1$ specifies that if control signal $P = 1$, register
+                    $R1$ contents transfer into register $R2$.</p>
+
+                <h2>2. Common Bus & Memory Transfers</h2>
+                <p>Multiplexers or tri-state buffers interconnect internal registers over a shared bus.</p>
+
+                <h2>3. Categorization of Micro-Operations</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>RTL Micro-operation</th>
+                            <th>Hardware Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Arithmetic</td>
+                            <td>$R3 \leftarrow R1 + R2$</td>
+                            <td>Adds contents of $R1$ and $R2$</td>
+                        </tr>
+                        <tr>
+                            <td>Arithmetic</td>
+                            <td>$R1 \leftarrow R1 + 1$</td>
+                            <td>Increments register $R1$</td>
+                        </tr>
+                        <tr>
+                            <td>Logic</td>
+                            <td>$R1 \leftarrow R1 \oplus R2$</td>
+                            <td>Bitwise XOR logic between $R1$ and $R2$</td>
+                        </tr>
+                        <tr>
+                            <td>Shift</td>
+                            <td>$R1 \leftarrow \text{shl } R1$</td>
+                            <td>Logical Shift Left (0 inserted in LSB)</td>
+                        </tr>
+                        <tr>
+                            <td>Shift</td>
+                            <td>$R1 \leftarrow \text{ashr } R1$</td>
+                            <td>Arithmetic Shift Right (preserves MSB sign bit)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>4. Design of Arithmetic Logic Unit (ALU)</h2>
+                <p>An ALU combines arithmetic operations (add, subtract) and bitwise logic operations (AND, OR, XOR)
+                    into a unified circuit controlled by select variables. Below is a 4-bit ALU performing an addition
+                    operation ($1010_2 + 0011_2 = 1101_2$) with status flags displayed.</p>
+
+                <div class="diagram-container">
+                    <svg width="520" height="210" viewBox="0 0 520 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- ALU V-Shape Block -->
+                        <polygon points="140,20 320,20 270,100 320,180 140,180 190,100" fill="#eff6ff" stroke="#0f172a"
+                            stroke-width="2.5" />
+                        <text x="210" y="105" font-weight="bold" font-size="22" fill="#2563eb">4-Bit ALU</text>
+
+                        <!-- Inputs -->
+                        <line x1="20" y1="50" x2="155" y2="50" stroke="#0f172a" stroke-width="2.5" />
+                        <text x="15" y="40" font-weight="bold" font-size="13" fill="#0f172a">Input A [3:0] = 1010
+                            (10)</text>
+
+                        <line x1="20" y1="150" x2="155" y2="150" stroke="#0f172a" stroke-width="2.5" />
+                        <text x="15" y="172" font-weight="bold" font-size="13" fill="#0f172a">Input B [3:0] = 0011
+                            (3)</text>
+
+                        <!-- Select Lines -->
+                        <line x1="230" y1="180" x2="230" y2="205" stroke="#2563eb" stroke-width="2.5" />
+                        <text x="160" y="202" font-weight="bold" font-size="11" fill="#2563eb">Select [S2,S1,S0] = 010
+                            (ADD)</text>
+
+                        <!-- Main Output -->
+                        <line x1="295" y1="140" x2="360" y2="140" stroke="#16a34a" stroke-width="3" />
+                        <rect x="360" y="120" width="150" height="40" rx="6" fill="#1e293b" />
+                        <text x="370" y="145" font-weight="bold" font-size="14" fill="#4ade80">Y [3:0] = 1101
+                            (13)</text>
+
+                        <!-- Flags Box -->
+                        <rect x="360" y="25" width="150" height="80" rx="6" fill="#f8fafc" stroke="#cbd5e1"
+                            stroke-width="1.5" />
+                        <text x="370" y="45" font-weight="bold" font-size="12" fill="#0f172a">Status Flags:</text>
+                        <text x="370" y="65" font-size="11" font-weight="bold" fill="#64748b">Z (Zero) = 0 | C (Carry) =
+                            0</text>
+                        <text x="370" y="85" font-size="11" font-weight="bold" fill="#64748b">V (Overflow) = 0 | N =
+                            1</text>
+                    </svg>
+                    <div class="diagram-caption">Figure 4.1: 4-Bit Arithmetic Logic Unit Architecture with Bus
+                        Input/Output & Flag Data</div>
+                </div>
+
+                <div class="footer-tag">Sujal Nasa | 26225030 | 1MCA</div>
+            </div>
+
+            <!-- PAGE 8: CONTROL UNITS & INSTRUCTION EXECUTION -->
+            <div class="page" id="page-8">
+                <h1>Unit 4: Control Units & Instruction Execution</h1>
+
+                <h2>1. Execution of a Complete Instruction</h2>
+                <p>Every instruction follows three core sequential phases:</p>
+                <ol>
+                    <li><strong>Fetch:</strong> $AR \leftarrow PC$; $IR \leftarrow M[AR]$, $PC \leftarrow PC + 1$</li>
+                    <li><strong>Decode:</strong> Decode opcode in $IR$, evaluate addressing modes.</li>
+                    <li><strong>Execute:</strong> Read operands, perform micro-operations, and store results.</li>
+                </ol>
+
+                <h2>2. Hardwired Control Unit Architecture</h2>
+                <p>Hardwired Control Units use combinational logic gates, step counters, and instruction decoders to
+                    generate high-speed control signals ($C_i$). Below, a 16-bit Instruction Register ($IR$) field
+                    layout is decoded directly into timing signals ($T_0-T_7$) and gate control outputs.</p>
+
+                <div class="diagram-container">
+                    <svg width="520" height="240" viewBox="0 0 520 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Instruction Register Block -->
+                        <rect x="15" y="20" width="180" height="50" rx="6" fill="#eff6ff" stroke="#0f172a"
+                            stroke-width="2" />
+                        <text x="25" y="40" font-weight="bold" font-size="12" fill="#1e40af">IR [15:0] Instruction
+                            Register</text>
+                        <text x="25" y="58" font-size="10" fill="#475569">Bit 15: I | Bits 14-12: Op | Bits 11-0:
+                            Addr</text>
+
+                        <!-- Opcode Decoder -->
+                        <rect x="230" y="20" width="100" height="50" rx="6" fill="#eff6ff" stroke="#0f172a"
+                            stroke-width="2" />
+                        <text x="240" y="42" font-weight="bold" font-size="12">3x8 Decoder</text>
+                        <text x="242" y="58" font-size="10" fill="#2563eb">Outputs D0 - D7</text>
+
+                        <!-- Step Counter -->
+                        <rect x="15" y="100" width="110" height="50" rx="6" fill="#eff6ff" stroke="#0f172a"
+                            stroke-width="2" />
+                        <text x="22" y="122" font-weight="bold" font-size="11">Sequence Counter</text>
+                        <text x="38" y="138" font-weight="bold" font-size="11" fill="#2563eb">(4-Bit SC)</text>
+
+                        <!-- SC Decoder -->
+                        <rect x="160" y="100" width="100" height="50" rx="6" fill="#eff6ff" stroke="#0f172a"
+                            stroke-width="2" />
+                        <text x="170" y="122" font-weight="bold" font-size="12">4x16 Decoder</text>
+                        <text x="172" y="138" font-size="10" fill="#2563eb">Outputs T0 - T15</text>
+
+                        <!-- Logic Matrix -->
+                        <rect x="300" y="90" width="205" height="135" rx="8" fill="#dbeafe" stroke="#0f172a"
+                            stroke-width="2.5" />
+                        <text x="320" y="115" font-weight="bold" font-size="13" fill="#1e40af">Combinational Logic
+                            Matrix</text>
+                        <text x="315" y="135" font-size="11" fill="#334155">• Gates: AND / OR / NOT</text>
+                        <text x="315" y="152" font-size="11" fill="#334155">• Inputs: I, D0..D7, T0..T15</text>
+
+                        <!-- Lines -->
+                        <line x1="195" y1="45" x2="230" y2="45" stroke="#0f172a" stroke-width="2" />
+                        <line x1="330" y1="45" x2="380" y2="45" stroke="#0f172a" stroke-width="2" />
+                        <line x1="380" y1="45" x2="380" y2="90" stroke="#0f172a" stroke-width="2" />
+                        <line x1="125" y1="125" x2="160" y2="125" stroke="#0f172a" stroke-width="2" />
+                        <line x1="260" y1="125" x2="300" y2="125" stroke="#0f172a" stroke-width="2" />
+
+                        <!-- Control Outputs -->
+                        <line x1="410" y1="225" x2="410" y2="238" stroke="#16a34a" stroke-width="3" />
+                        <text x="310" y="235" font-weight="bold" font-size="12" fill="#16a34a">Control Signals (x1, x2,
+                            x3... xn)</text>
+                    </svg>
+                    <div class="diagram-caption">Figure 5.1: Detailed Hardwired Control Unit Schematic Architecture with
+                        Decoders & SC Signals</div>
+                </div>
+
+                <h2>3. Microprogrammed Control Unit Architecture</h2>
+                <p>Replaces combinational gate arrays with a <strong>Control Memory (ROM)</strong> that stores
+                    microinstructions. Below, the microinstruction word format shows explicit field definitions ($F_1,
+                    F_2, F_3, CD, BR, AD$).</p>
+
+                <div class="diagram-container">
+                    <svg width="520" height="250" viewBox="0 0 520 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Control Address Register -->
+                        <rect x="20" y="100" width="100" height="50" rx="6" fill="#eff6ff" stroke="#0f172a"
+                            stroke-width="2" />
+                        <text x="55" y="122" font-weight="bold" font-size="14" fill="#2563eb">CAR</text>
+                        <text x="30" y="138" font-size="10" fill="#475569">Addr: 0110100</text>
+
+                        <!-- Control Memory -->
+                        <rect x="160" y="60" width="150" height="130" rx="8" fill="#dbeafe" stroke="#0f172a"
+                            stroke-width="2.5" />
+                        <text x="180" y="90" font-weight="bold" font-size="14" fill="#1e40af">Control Memory</text>
+                        <text x="205" y="110" font-weight="bold" font-size="12" fill="#1e40af">(ROM)</text>
+                        <text x="175" y="140" font-size="10" fill="#334155">128 Words x 20 Bits</text>
+                        <text x="172" y="158" font-size="10" fill="#334155">Contains Microprograms</text>
+
+                        <!-- Control Data Register -->
+                        <rect x="350" y="100" width="150" height="50" rx="6" fill="#eff6ff" stroke="#0f172a"
+                            stroke-width="2" />
+                        <text x="360" y="122" font-weight="bold" font-size="14" fill="#2563eb">CDR / Buffer</text>
+                        <text x="360" y="138" font-size="10" fill="#475569">Microinstruction Word</text>
+
+                        <!-- Microinstruction Word Format Banner -->
+                        <rect x="20" y="10" width="480" height="36" rx="6" fill="#1e293b" />
+                        <text x="30" y="32" font-weight="bold" font-size="11" fill="#38bdf8">Word Structure: [ F1: 3b |
+                            F2: 3b | F3: 3b | CD: 2b | BR: 2b | AD: 7b ]</text>
+
+                        <!-- Lines -->
+                        <line x1="120" y1="125" x2="160" y2="125" stroke="#0f172a" stroke-width="2" />
+                        <line x1="310" y1="125" x2="350" y2="125" stroke="#0f172a" stroke-width="2" />
+
+                        <!-- Feedback Loop for Next Address -->
+                        <path d="M 420 150 L 420 210 L 70 210 L 70 150" stroke="#2563eb" stroke-width="2" fill="none" />
+                        <text x="180" y="205" font-weight="bold" font-size="11" fill="#2563eb">Next Address Sequencer
+                            Line</text>
+                    </svg>
+                    <div class="diagram-caption">Figure 5.2: Microprogrammed Control Unit Architecture &
+                        Microinstruction Data Structure</div>
+                </div>
+
+                <h2>4. Hardwired vs. Microprogrammed Comparison</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Hardwired Control Unit</th>
+                            <th>Microprogrammed Control Unit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Implementation</td>
+                            <td>Combinational logic gates & decoders</td>
+                            <td>Control store memory (ROM)</td>
+                        </tr>
+                        <tr>
+                            <td>Execution Speed</td>
+                            <td>Extremely Fast</td>
+                            <td>Slower due to memory fetch overhead</td>
+                        </tr>
+                        <tr>
+                            <td>Flexibility</td>
+                            <td>Difficult to redesign</td>
+                            <td>Easily updated by altering microcode</td>
+                        </tr>
+                        <tr>
+                            <td>Architecture</td>
+                            <td>Dominant in RISC processors</td>
+                            <td>Dominant in CISC architectures</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="footer-tag">Sujal Nasa | 26225030 | 1MCA</div>
+            </div>
+
+            <!-- PAGE 9: PIPELINING & SUPERSCALAR OPERATION -->
+            <div class="page" id="page-9">
+                <h1>Unit 5: Pipelining & Advanced Execution</h1>
+
+                <h2>1. Pipelining Fundamentals</h2>
+                <p>Pipelining overlaps instruction execution phases (Fetch, Decode, Execute, Writeback) to improve
+                    overall instruction throughput.</p>
+
+                <h2>2. Pipeline Hazards</h2>
+                <ul>
+                    <li><strong>Data Hazards:</strong> Occur when instructions depend on unwritten results of preceding
+                        instructions (RAW, WAR, WAW).</li>
+                    <li><strong>Instruction/Control Hazards:</strong> Caused by conditional branches altering the
+                        Program Counter ($PC$).</li>
+                    <li><strong>Structural Hazards:</strong> Occur when hardware resources are accessed simultaneously
+                        by multiple stages.</li>
+                </ul>
+
+                <h2>3. Superscalar Architecture</h2>
+                <p>Superscalar CPUs incorporate multiple parallel execution pipelines to issue and execute multiple
+                    instructions per clock cycle (IPC &gt; 1). The diagram below displays dual-issue pipeline execution
+                    with a 1-cycle data hazard stall.</p>
+
+                <div class="diagram-container">
+                    <svg width="520" height="190" viewBox="0 0 520 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Column Headers -->
+                        <text x="100" y="20" font-weight="bold" font-size="12" fill="#475569">Clock 1</text>
+                        <text x="180" y="20" font-weight="bold" font-size="12" fill="#475569">Clock 2</text>
+                        <text x="260" y="20" font-weight="bold" font-size="12" fill="#475569">Clock 3</text>
+                        <text x="340" y="20" font-weight="bold" font-size="12" fill="#475569">Clock 4</text>
+                        <text x="420" y="20" font-weight="bold" font-size="12" fill="#475569">Clock 5</text>
+
+                        <!-- Instruction Rows -->
+                        <text x="10" y="52" font-weight="bold" font-size="12">Instr 1 (ADD):</text>
+                        <rect x="90" y="35" width="65" height="26" rx="4" fill="#2563eb" /><text x="110" y="52"
+                            fill="white" font-weight="bold" font-size="11">IF</text>
+                        <rect x="170" y="35" width="65" height="26" rx="4" fill="#0284c7" /><text x="190" y="52"
+                            fill="white" font-weight="bold" font-size="11">ID</text>
+                        <rect x="250" y="35" width="65" height="26" rx="4" fill="#16a34a" /><text x="270" y="52"
+                            fill="white" font-weight="bold" font-size="11">EX</text>
+                        <rect x="330" y="35" width="65" height="26" rx="4" fill="#9333ea" /><text x="348" y="52"
+                            fill="white" font-weight="bold" font-size="11">WB</text>
+
+                        <text x="10" y="92" font-weight="bold" font-size="12">Instr 2 (SUB):</text>
+                        <rect x="90" y="75" width="65" height="26" rx="4" fill="#2563eb" /><text x="110" y="92"
+                            fill="white" font-weight="bold" font-size="11">IF</text>
+                        <!-- Stall Box -->
+                        <rect x="170" y="75" width="65" height="26" rx="4" fill="#dc2626" /><text x="178" y="92"
+                            fill="white" font-weight="bold" font-size="10">STALL</text>
+                        <rect x="250" y="75" width="65" height="26" rx="4" fill="#0284c7" /><text x="270" y="92"
+                            fill="white" font-weight="bold" font-size="11">ID</text>
+                        <rect x="330" y="75" width="65" height="26" rx="4" fill="#16a34a" /><text x="350" y="92"
+                            fill="white" font-weight="bold" font-size="11">EX</text>
+                        <rect x="410" y="75" width="65" height="26" rx="4" fill="#9333ea" /><text x="428" y="92"
+                            fill="white" font-weight="bold" font-size="11">WB</text>
+
+                        <text x="10" y="132" font-weight="bold" font-size="12">Instr 3 (MUL):</text>
+                        <rect x="170" y="115" width="65" height="26" rx="4" fill="#2563eb" /><text x="190" y="132"
+                            fill="white" font-weight="bold" font-size="11">IF</text>
+                        <rect x="250" y="115" width="65" height="26" rx="4" fill="#0284c7" /><text x="270" y="132"
+                            fill="white" font-weight="bold" font-size="11">ID</text>
+                        <rect x="330" y="115" width="65" height="26" rx="4" fill="#16a34a" /><text x="350" y="132"
+                            fill="white" font-weight="bold" font-size="11">EX</text>
+
+                        <!-- Hazard Indicator -->
+                        <path d="M 300 48 L 210 75" stroke="#dc2626" stroke-width="2" stroke-dasharray="4,4" />
+                        <text x="210" y="170" font-weight="bold" font-size="11" fill="#dc2626">▲ RAW Data Hazard
+                            Dependency Causes 1-Cycle Bubble Stall</text>
+                    </svg>
+                    <div class="diagram-caption">Figure 6.1: Pipelined Execution Timing Chart with Explicit Data Hazard
+                        Stall Indication</div>
+                </div>
+
+                <div class="footer-tag">Sujal Nasa | 26225030 | 1MCA</div>
+            </div>
+
+            <!-- PAGE 10: MEMORY HIERARCHY -->
+            <div class="page" id="page-10">
+                <h1>Unit 6: Memory Hierarchy & Storage</h1>
+
+                <h2>1. Memory Hierarchy Organization</h2>
+                <p>Balances operational speed, storage capacity, and cost per bit across memory system tiers. The
+                    structure below highlights access latency, storage capacities, and relative costs across each tier.
+                </p>
+
+                <div class="diagram-container">
+                    <svg width="520" height="230" viewBox="0 0 520 230" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Pyramid Tiers -->
+                        <polygon points="260,10 320,55 200,55" fill="#2563eb" stroke="#0f172a" stroke-width="2" />
+                        <text x="235" y="38" font-weight="bold" font-size="11" fill="white">CPU Registers</text>
+
+                        <polygon points="200,57 320,57 370,100 150,100" fill="#3b82f6" stroke="#0f172a"
+                            stroke-width="2" />
+                        <text x="215" y="82" font-weight="bold" font-size="12" fill="white">Cache (L1 / L2 / L3)</text>
+
+                        <polygon points="150,102 370,102 420,150 100,150" fill="#60a5fa" stroke="#0f172a"
+                            stroke-width="2" />
+                        <text x="195" y="130" font-weight="bold" font-size="12" fill="#0f172a">Main Memory (DRAM)</text>
+
+                        <polygon points="100,152 420,152 470,200 50,200" fill="#93c5fd" stroke="#0f172a"
+                            stroke-width="2" />
+                        <text x="170" y="180" font-weight="bold" font-size="12" fill="#0f172a">Secondary Storage (NVMe
+                            SSD / HDD)</text>
+
+                        <!-- Latency & Capacity Labels -->
+                        <text x="330" y="38" font-size="11" font-weight="bold" fill="#2563eb">&lt; 1 ns | ~1 KB</text>
+                        <text x="380" y="82" font-size="11" font-weight="bold" fill="#2563eb">1–10 ns | 32 MB</text>
+                        <text x="430" y="130" font-size="11" font-weight="bold" fill="#2563eb">50–100 ns | 32 GB</text>
+                        <text x="475" y="180" font-size="11" font-weight="bold" fill="#2563eb">&lt; 100 μs | 2 TB</text>
+
+                        <!-- Side Arrow -->
+                        <line x1="25" y1="20" x2="25" y2="190" stroke="#0f172a" stroke-width="2.5" />
+                        <polygon points="25,10 20,25 30,25" fill="#0f172a" />
+                        <text x="5" y="110" font-weight="bold" font-size="11" fill="#0f172a"
+                            transform="rotate(-90 12,110)">Speed &amp; Cost Increase</text>
+                    </svg>
+                    <div class="diagram-caption">Figure 7.1: Memory Hierarchy Pyramid with Operational Speeds & Capacity
+                        Data</div>
+                </div>
+
+                <h2>2. Static RAM (SRAM) vs. Dynamic RAM (DRAM)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Static RAM (SRAM)</th>
+                            <th>Dynamic RAM (DRAM)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cell Structure</td>
+                            <td>6-Transistor flip-flop circuit</td>
+                            <td>1 Transistor + 1 Storage Capacitor</td>
+                        </tr>
+                        <tr>
+                            <td>Periodic Refresh</td>
+                            <td>Not Required</td>
+                            <td>Required constantly</td>
+                        </tr>
+                        <tr>
+                            <td>Access Speed</td>
+                            <td>Fast (&lt; 10 ns)</td>
+                            <td>Slower (~50 ns)</td>
+                        </tr>
+                        <tr>
+                            <td>Primary Role</td>
+                            <td>CPU Cache Memory</td>
+                            <td>Main System RAM</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>3. Cache & Virtual Memory</h2>
+                <p><strong>Cache Memory</strong> buffers active program data to reduce CPU memory latency.
+                    <strong>Virtual Memory</strong> expands physical address space onto secondary storage using paged
+                    address translations.</p>
+
+                <div class="footer-tag">Sujal Nasa | 26225030 | 1MCA</div>
+            </div>
+
+            <!-- PAGE 11: INTERACTIVE 10 MCQ QUIZ -->
+            <div class="page" id="page-11">
+                <h1>Interactive Self-Assessment Quiz</h1>
+                <p>Test your understanding of the concepts covered in this manual:</p>
+
+                <div id="quizContainer">
+                    <div class="quiz-card">
+                        <div class="quiz-question">1. What are the logical output expressions for a Half Adder?</div>
+                        <div class="quiz-options">
+                            <label class="quiz-option"><input type="radio" name="q0" value="a"> A) Sum = A + B, Carry =
+                                A · B</label>
+                            <label class="quiz-option"><input type="radio" name="q0" value="b"> B) Sum = A ⊕ B, Carry =
+                                A · B</label>
+                            <label class="quiz-option"><input type="radio" name="q0" value="c"> C) Sum = A · B, Carry =
+                                A ⊕ B</label>
+                        </div>
+                        <div class="feedback" id="fb-0"></div>
+                    </div>
+
+                    <div class="quiz-card">
+                        <div class="quiz-question">2. How many select lines are required for a 4-to-1 Multiplexer?</div>
+                        <div class="quiz-options">
+                            <label class="quiz-option"><input type="radio" name="q1" value="a"> A) 1</label>
+                            <label class="quiz-option"><input type="radio" name="q1" value="b"> B) 2</label>
+                            <label class="quiz-option"><input type="radio" name="q1" value="c"> C) 4</label>
+                        </div>
+                        <div class="feedback" id="fb-1"></div>
+                    </div>
+
+                    <div class="quiz-card">
+                        <div class="quiz-question">3. Which input condition produces an invalid state in an SR
+                            Flip-Flop?</div>
+                        <div class="quiz-options">
+                            <label class="quiz-option"><input type="radio" name="q2" value="a"> A) S = 0, R = 0</label>
+                            <label class="quiz-option"><input type="radio" name="q2" value="b"> B) S = 1, R = 0</label>
+                            <label class="quiz-option"><input type="radio" name="q2" value="c"> C) S = 1, R = 1</label>
+                        </div>
+                        <div class="feedback" id="fb-2"></div>
+                    </div>
+
+                    <div class="quiz-card">
+                        <div class="quiz-question">4. What does the RTL expression "P: R2 ← R1" mean?</div>
+                        <div class="quiz-options">
+                            <label class="quiz-option"><input type="radio" name="q3" value="a"> A) Loads R1 into R2 if
+                                control signal P = 1</label>
+                            <label class="quiz-option"><input type="radio" name="q3" value="b"> B) Copies R1 to R2
+                                unconditionally</label>
+                            <label class="quiz-option"><input type="radio" name="q3" value="c"> C) Swaps registers R1
+                                and R2</label>
+                        </div>
+                        <div class="feedback" id="fb-3"></div>
+                    </div>
+
+                    <div class="quiz-card">
+                        <div class="quiz-question">5. Microprogrammed Control Units store microinstructions in:</div>
+                        <div class="quiz-options">
+                            <label class="quiz-option"><input type="radio" name="q4" value="a"> A) General Purpose
+                                Registers</label>
+                            <label class="quiz-option"><input type="radio" name="q4" value="b"> B) Control Memory
+                                (ROM)</label>
+                            <label class="quiz-option"><input type="radio" name="q4" value="c"> C) Hardwired logic gate
+                                arrays</label>
+                        </div>
+                        <div class="feedback" id="fb-4"></div>
+                    </div>
+
+                    <div class="quiz-card">
+                        <div class="quiz-question">6. Hardwired control units are primarily built using:</div>
+                        <div class="quiz-options">
+                            <label class="quiz-option"><input type="radio" name="q5" value="a"> A) Combinational Logic
+                                Gates & Decoders</label>
+                            <label class="quiz-option"><input type="radio" name="q5" value="b"> B) Control ROM
+                                Memory</label>
+                            <label class="quiz-option"><input type="radio" name="q5" value="c"> C) Virtual Memory
+                                Tables</label>
+                        </div>
+                        <div class="feedback" id="fb-5"></div>
+                    </div>
+
+                    <div class="quiz-card">
+                        <div class="quiz-question">7. Pipeline stalls caused by instruction operand dependencies are
+                            called:</div>
+                        <div class="quiz-options">
+                            <label class="quiz-option"><input type="radio" name="q6" value="a"> A) Data Hazards</label>
+                            <label class="quiz-option"><input type="radio" name="q6" value="b"> B) Structural
+                                Hazards</label>
+                            <label class="quiz-option"><input type="radio" name="q6" value="c"> C) Branch
+                                Hazards</label>
+                        </div>
+                        <div class="feedback" id="fb-6"></div>
+                    </div>
+
+                    <div class="quiz-card">
+                        <div class="quiz-question">8. What memory technology is typically used for CPU Cache memory?
+                        </div>
+                        <div class="quiz-options">
+                            <label class="quiz-option"><input type="radio" name="q7" value="a"> A) DRAM</label>
+                            <label class="quiz-option"><input type="radio" name="q7" value="b"> B) SRAM</label>
+                            <label class="quiz-option"><input type="radio" name="q7" value="c"> C) Flash Storage</label>
+                        </div>
+                        <div class="feedback" id="fb-7"></div>
+                    </div>
+
+                    <div class="quiz-card">
+                        <div class="quiz-question">9. What occurs when a requested address page is not in physical RAM?
+                        </div>
+                        <div class="quiz-options">
+                            <label class="quiz-option"><input type="radio" name="q8" value="a"> A) Cache Hit</label>
+                            <label class="quiz-option"><input type="radio" name="q8" value="b"> B) Page Fault</label>
+                            <label class="quiz-option"><input type="radio" name="q8" value="c"> C) Register
+                                Overflow</label>
+                        </div>
+                        <div class="feedback" id="fb-8"></div>
+                    </div>
+
+                    <div class="quiz-card">
+                        <div class="quiz-question">10. Superscalar processor execution allows:</div>
+                        <div class="quiz-options">
+                            <label class="quiz-option"><input type="radio" name="q9" value="a"> A) Executing multiple
+                                instructions per clock cycle</label>
+                            <label class="quiz-option"><input type="radio" name="q9" value="b"> B) Operating without
+                                memory</label>
+                            <label class="quiz-option"><input type="radio" name="q9" value="c"> C) Executing
+                                instructions without clock signals</label>
+                        </div>
+                        <div class="feedback" id="fb-9"></div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 25px; text-align: center;">
+                    <button class="btn" onclick="checkQuiz()">Check Quiz Results</button>
+                    <p id="quizScore" style="margin-top: 15px; font-weight: bold; font-size: 1.15rem;"></p>
+                </div>
+
+                <div class="footer-tag">Sujal Nasa | 26225030 | 1MCA</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 11;
+        const correctAnswers = ['b', 'b', 'c', 'a', 'b', 'a', 'a', 'b', 'b', 'a'];
+
+        function updatePageDisplay() {
+            for (let i = 1; i <= totalPages; i++) {
+                const page = document.getElementById(`page-${i}`);
+                if (page) page.classList.remove('active');
+            }
+
+            const activePage = document.getElementById(`page-${currentPage}`);
+            if (activePage) {
+                activePage.classList.add('active');
+                activePage.scrollTop = 0;
+            }
+
+            document.getElementById('pageIndicator').innerText = `Page ${currentPage} of ${totalPages}`;
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+        }
+
+        function changePage(delta) {
+            if (currentPage + delta >= 1 && currentPage + delta <= totalPages) {
+                currentPage += delta;
+                updatePageDisplay();
+            }
+        }
+
+        function goToPage(pageNum) {
+            if (pageNum >= 1 && pageNum <= totalPages) {
+                currentPage = pageNum;
+                updatePageDisplay();
+            }
+        }
+
+        function checkQuiz() {
+            let score = 0;
+            for (let i = 0; i < 10; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                const feedbackEl = document.getElementById(`fb-${i}`);
+
+                if (selected) {
+                    if (selected.value === correctAnswers[i]) {
+                        score++;
+                        feedbackEl.innerText = "✓ Correct";
+                        feedbackEl.className = "feedback correct";
+                    } else {
+                        feedbackEl.innerText = `✗ Incorrect. Correct choice: ${correctAnswers[i].toUpperCase()}`;
+                        feedbackEl.className = "feedback incorrect";
+                    }
+                } else {
+                    feedbackEl.innerText = "Please select an option.";
+                    feedbackEl.className = "feedback incorrect";
+                }
+            }
+
+            const scoreEl = document.getElementById('quizScore');
+            scoreEl.innerText = `Final Score: ${score} / 10`;
+            scoreEl.style.color = score >= 7 ? '#16a34a' : '#dc2626';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') changePage(1);
+            else if (e.key === 'ArrowLeft') changePage(-1);
+        });
+
+        updatePageDisplay();
+    </script>
+
+</body>
+
+</html>
